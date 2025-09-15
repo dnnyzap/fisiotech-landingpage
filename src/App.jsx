@@ -3,8 +3,18 @@ import logo from './assets/fisionearprev.png';
 import { FaDumbbell } from 'react-icons/fa';
 import {IoIosHeartEmpty } from 'react-icons/io';
 import { TbProgressCheck } from 'react-icons/tb';
+import { useState, useEffect, use } from 'react';
 
 function App() {
+    const [isAnimated, setIsAnimated] = useState(false);
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setIsAnimated(true);
+      }, 200);
+      return () => clearTimeout(timer);
+    }, []);
+
   return (
     <div>
       <header>
@@ -25,11 +35,11 @@ function App() {
         <button className="cta-button">Comece agora!</button>
       </section>
 
-      <section className ="features-section">
+      <section className ="feature-section">
         <h2> O que nossa IA pode fazer por você</h2>
-        <div className="features-container">
+        <div className="feature-container">
           <div className="feature-item">
-            <FaDumbbell size={50} color="#007bff"/ >
+            <FaDumbbell size={50} color="#007bff"/>
             <h3>Planos personalizados</h3>
             <p>Crie uma rotina de exercícios sob medida para suas necessidades.</p> 
             </div>
