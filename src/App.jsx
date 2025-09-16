@@ -3,17 +3,45 @@ import logo from './assets/fisionearprev.png';
 import { FaDumbbell } from 'react-icons/fa';
 import {IoIosHeartEmpty } from 'react-icons/io';
 import { TbProgressCheck } from 'react-icons/tb';
-import { useState, useEffect, use } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 function App() {
-    const [isAnimated, setIsAnimated] = useState(false);
+  const featureRef = useRef([]);  
+  const [isIntersecting, setIsIntersecting] = useState({});
 
     useEffect(() => {
-      const timer = setTimeout(() => {
-        setIsAnimated(true);
-      }, 200);
-      return () => clearTimeout(timer);
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            setIsIntersecting((prev) => ({
+              ...prev,
+              [entry.target.id]: entry.isIntersecting,
+            }));
+          });
+        },
+        {
+          threshold: 0.5,
+        }
+      );
+
+      featureRef.current.forEach((el) => {
+        if (el) observer.observe(el);
+      });
+
+      return () => {
+        featureRef.current.forEach((el) => {
+          if (el) {
+            observer.unobserve(el);
+          }
+        });
+      };
     }, []);
+
+    const featureItems = [
+      { id: 'feature-1', icon: <FaDumbbell size={50} color="#007bff" />, title: 'Planos personalizados', description: 'Crie uma rotina de exercícios sob medida para suas necessidades.' },
+      { id: 'feature-2', icon: <IoIosHeartEmpty size={50} color="#007bff" />, title: 'Feedback em tempo real', description: 'Receba orientações instantâneas para corrigir seus movimentos.' },
+      { id: 'feature-3', icon: <TbProgressCheck size={50} color="#007bff" />, title: 'Acompanhamento de progresso', description: 'Monitore sua evolução e ajuste seu plano conforme necessário.' },
+    ]
 
   return (
     <div>
@@ -30,33 +58,30 @@ function App() {
 
       <main>
       <section className="hero-section">
-        <h1>Fisioterapia Guiada por IA</h1>
+  <h1><span className="highlight">Fisioterapia</span> Guiada por IA</h1>
         <p>Exercícios personalizados e feedback em tempo real para sua recuperação, no conforto da sua casa</p>
         <button className="cta-button">Comece agora!</button>
-      </section>
 
-      <section className ="feature-section">
+        <section className ="feature-section">
         <h2> O que nossa IA pode fazer por você</h2>
         <div className="feature-container">
-          <div className="feature-item">
-            <FaDumbbell size={50} color="#007bff"/>
-            <h3>Planos personalizados</h3>
-            <p>Crie uma rotina de exercícios sob medida para suas necessidades.</p> 
+          {featureItems.map((item, index) => (
+            <div 
+              key={item.id}
+              id={item.id}
+              ref={(el) => (featureRef.current[index] = el)}
+              className={`feature-item ${isIntersecting[item.id] ? 'animate' : ''}`}
+            >
+              {item.icon}
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
             </div>
-          <div className ="feature-item">
-            <IoIosHeartEmpty size={50} color="#007bff"/>
-            <h3>Feedback em tempo real</h3>
-            <p>Receba orientações instantâneas para corrigir seus movimentos.</p>
-        </div>
-        <div className ="feature-item">
-            <TbProgressCheck size={50} color="#007bff"/>
-            <h3>Acompanhamento de progresso</h3>
-            <p>Monitore sua evolução e ajuste seu plano conforme necessário.</p>
-        </div>
+          ))}
         </div>
       </section>
-      </main>
-    </div>
+    </section>
+ </main>
+</div>
   );
 }
 
